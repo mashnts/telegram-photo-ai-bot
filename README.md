@@ -1,39 +1,56 @@
-# Telegram бот для фото и AI
+# Telegram AI Photo Bot
 
-Бот для обработки изображений и общения с AI моделями.
+Telegram bot for image processing and AI conversation. Integrates OpenAI GPT-4 Vision and Deepseek AI.
 
-## Возможности
+## Features
 
-- Чат с AI (deepseek)
-- Анализ фото через GPT-4 Vision
-- Распознавание текста (OCR)
-- Распознавание лиц
-- Редактирование: изменение размера, ретушь, удаление фона
-- Конвертация форматов (PNG/JPEG/WEBP)
-- Сжатие изображений
+**AI Functions:**
+- AI chat (Deepseek)
+- Image analysis (GPT-4 Vision)
+- Text recognition (OCR)
+- Face detection
 
-## Команды
+**Image Processing:**
+- Resize and crop
+- Photo enhancement
+- Background removal
+- Format conversion (PNG/JPEG/WEBP)
+- Image compression
 
-- `/start` - меню
-- `/conversation` - чат с AI
-- `/options` - работа с фото
-- `/help` - помощь
-- `/stop` - завершить
+## Tech Stack
 
-## Локальный запуск
+- Python 3.12
+- aiogram
+- OpenAI API
+- Replicate API
+- Deployed on Render.com
+
+## Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Создай `.env` файл с ключами:
-```
-telegram_bot_token=ваш_токен
-openai_api_key=ваш_ключ
-replicate_api_token=ваш_токен
+Create `.env` file:
+```env
+telegram_bot_token=your_token
+openai_api_key=your_key
+replicate_api_token=your_token
 ```
 
-Запуск:
+Run:
 ```bash
 python main.py
 ```
+
+## Commands
+
+- `/start` - Main menu
+- `/conversation` - AI chat
+- `/options` - Photo tools
+- `/help` - Help
+- `/stop` - Stop session
+
+## Deployment
+
+Configured for Render.com deployment with Procfile and environment variables.
