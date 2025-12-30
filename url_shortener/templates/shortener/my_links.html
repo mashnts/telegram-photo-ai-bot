@@ -1,0 +1,63 @@
+{% extends "shortener/base.html" %}
+
+{% block title %}Мои ссылки{% endblock %}
+
+{% block content %}
+<h1>Мои ссылки</h1>
+
+{% if urls %}
+    <div class="grid-container">
+        {% for url in urls %}
+        <div class="card link-card">
+            <div class="link-card-content">
+                <div class="link-card-info">
+                    <div class="link-card-section">
+                        <p class="label-mini" style="font-weight: 700; font-size: 15px;">Короткая ссылка</p>
+                        <a href="/{{ url.short_code }}" target="_blank" class="link-primary">
+                            {{ request.scheme }}://{{ request.get_host }}/{{ url.short_code }}
+                        </a>
+                    </div>
+
+                    <div class="link-card-section">
+                        <p class="label-mini">Оригинальный URL</p>
+                        <p class="url-display" style="font-size: 14px;">{{ url.original_url }}</p>
+                    </div>
+
+                    <div class="link-card-stats">
+                        <div class="stat-item">
+                            <p class="label-mini">Переходов</p>
+                            <p class="stat-value">{{ url.click_count }}</p>
+                        </div>
+                        <div>
+                            <p class="label-mini">Создана</p>
+                            <p class="stat-date">{{ url.created_at|date:"d.m.Y H:i" }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="link-card-actions">
+                    <a href="{% url 'shortener:analytics' url.short_code %}" class="btn">
+                        Аналитика
+                    </a>
+                    <button onclick="copyLink(this, '{{ request.scheme }}://{{ request.get_host }}/{{ url.short_code }}')" class="btn btn-secondary">
+                        Копировать
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% load static %}
+    <script src="{% static 'shortener/js/copy-link.js' %}"></script>
+
+{% else %}
+    <div class="card empty-state">
+        <p>У вас пока нет созданных ссылок</p>
+        <a href="{% url 'shortener:index' %}" class="btn">
+            Создать первую ссылку
+        </a>
+    </div>
+{% endif %}
+
+{% endblock %}

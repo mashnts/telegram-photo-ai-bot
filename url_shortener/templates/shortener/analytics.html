@@ -1,0 +1,153 @@
+{% extends "shortener/base.html" %}
+
+{% block title %}Аналитика - {{ url.short_code }}{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <a href="{% url 'shortener:my_links' %}" class="back-link">
+        ← Все ссылки
+    </a>
+</div>
+
+<h1>Аналитика переходов</h1>
+
+<div class="info-card">
+    <p class="label-mini mb-1">Короткая ссылка</p>
+    <p class="text-lg" style="color: var(--color-primary-lighter); word-break: break-all;">
+        {{ request.scheme }}://{{ request.get_host }}/{{ url.short_code }}
+    </p>
+</div>
+
+<div class="info-card">
+    <p class="label-mini mb-1">Оригинальный URL</p>
+    <p class="url-display">{{ url.original_url }}</p>
+</div>
+
+<div class="stat-card">
+    <div class="stat-label">Всего переходов</div>
+    <div class="stat-number">{{ stats.total_clicks }}</div>
+</div>
+
+<h2 class="section-title">График переходов по датам</h2>
+<div class="chart-container">
+    <canvas id="clicksChart"></canvas>
+</div>
+
+<div class="stats-grid">
+    <div>
+        <h3 class="section-subtitle">По странам</h3>
+        {% if stats.by_country %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Страна</th>
+                        <th class="text-right">Переходов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.by_country|slice:":10" %}
+                    <tr>
+                        <td>{{ item.country|default:"Неизвестно" }}</td>
+                        <td class="text-right" style="font-weight: 600; color: var(--color-primary-lighter);">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-data">Нет данных</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <h3 class="section-subtitle">По городам</h3>
+        {% if stats.by_city %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Город</th>
+                        <th class="text-right">Переходов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.by_city|slice:":10" %}
+                    <tr>
+                        <td>{{ item.city|default:"Неизвестно" }}</td>
+                        <td class="text-right" style="font-weight: 600; color: var(--color-primary-light);">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-data">Нет данных</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div>
+        <h3 class="section-subtitle">По устройствам</h3>
+        {% if stats.by_device %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Устройство</th>
+                        <th class="text-right">Переходов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.by_device %}
+                    <tr>
+                        <td class="text-capitalize">{{ item.device_type|default:"Неизвестно" }}</td>
+                        <td class="text-right" style="font-weight: 600; color: var(--color-primary-lightest);">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-data">Нет данных</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <h3 class="section-subtitle">По браузерам</h3>
+        {% if stats.by_browser %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Браузер</th>
+                        <th class="text-right">Переходов</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in stats.by_browser|slice:":10" %}
+                    <tr>
+                        <td>{{ item.browser|default:"Неизвестно" }}</td>
+                        <td class="text-right" style="font-weight: 600; color: var(--color-primary);">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="no-data">Нет данных</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% load static %}
+<script src="{% static 'shortener/js/analytics-chart.js' %}"></script>
+<script>
+    initAnalyticsChart({{ dates|safe }}, {{ counts|safe }});
+</script>
+{% endblock %}
