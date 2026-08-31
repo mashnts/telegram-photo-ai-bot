@@ -1,9 +1,7 @@
-# вспомогательные функции для работы с user agent и ip
 from user_agents import parse
 
 
 def get_device_type(user_agent_string):
-    """определяет тип устройства по user agent"""
     user_agent = parse(user_agent_string)
 
     if user_agent.is_mobile:
@@ -27,7 +25,6 @@ def get_os_info(user_agent_string):
 
 
 def get_client_ip(request):
-    """получаем ip адрес клиента"""
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
     if x_forwarded_for:
         ip = x_forwarded_for.split(',')[0]

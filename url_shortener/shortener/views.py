@@ -1,21 +1,32 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from .models import URL, Click
 from .utils import get_device_type, get_browser_info, get_os_info, get_client_ip
 from .services import get_location_by_ip, generate_qr_code
 
 
 def index(request):
-    # главная страница с формой создания короткой ссылки
+    error = None
     if request.method == 'POST':
         original_url = request.POST.get('url')
         if original_url:
-            url_obj = URL.objects.create(
-                original_url=original_url,
-                created_by=request.user if request.user.is_authenticated else None
-            )
-            # TODO: сделать генерацию qr кода асинхронной, щас блокирует запрос
-            generate_qr_code(url_obj)
+            validator = URLValidator()
+            try:
+                validator(original_url)
+            except ValidationError:
+                error = 'Invalid URL'
+                return render(request, 'shortener/index.html', {'error': error})
+
+            if URL.objects.filter(original_url=original_url).exists():
+                url_obj = URL.objects.get(original_url=original_url)
+            else:
+                url_obj = URL.objects.create(
+                    original_url=original_url,
+                    created_by=request.user if request.user.is_authenticated else None
+                )
+                generate_qr_code(url_obj)
             short_url = request.build_absolute_uri(f'/{url_obj.short_code}')
 
             return render(request, 'shortener/index.html', {
@@ -27,8 +38,6 @@ def index(request):
 
 
 def my_links(request):
-    # показываем последние 50 созданных ссылок
-    # TODO: добавить пагинацию когда ссылок станет больше
     urls = URL.objects.all().order_by('-created_at')[:50]
     return render(request, 'shortener/my_links.html', {'urls': urls})
 
@@ -58,6 +67,7 @@ def redirect_to_url(request, short_code):
 
 
 def analytics(request, short_code):
+    import json
     url = get_object_or_404(URL, short_code=short_code)
     stats = url.get_click_stats()
     clicks_by_date = url.get_clicks_by_date()
@@ -68,8 +78,8 @@ def analytics(request, short_code):
     context = {
         'url': url,
         'stats': stats,
-        'dates': dates,
-        'counts': counts,
+        'dates_json': json.dumps(dates),
+        'counts_json': json.dumps(counts),
     }
 
     return render(request, 'shortener/analytics.html', context)

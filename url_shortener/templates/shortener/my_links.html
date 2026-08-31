@@ -30,7 +30,7 @@
                         </div>
                         <div>
                             <p class="label-mini">Создана</p>
-                            <p class="stat-date">{{ url.created_at|date:"d.m.Y H:i" }}</p>
+                            <p class="stat-date" data-utc="{{ url.created_at|date:'c' }}">{{ url.created_at|date:"d.m.Y H:i" }}</p>
                         </div>
                     </div>
                 </div>
@@ -50,6 +50,17 @@
 
     {% load static %}
     <script src="{% static 'shortener/js/copy-link.js' %}"></script>
+    <script>
+        document.querySelectorAll('.stat-date[data-utc]').forEach(el => {
+            const utcDate = new Date(el.dataset.utc);
+            const day = String(utcDate.getDate()).padStart(2, '0');
+            const month = String(utcDate.getMonth() + 1).padStart(2, '0');
+            const year = utcDate.getFullYear();
+            const hours = String(utcDate.getHours()).padStart(2, '0');
+            const minutes = String(utcDate.getMinutes()).padStart(2, '0');
+            el.textContent = `${day}.${month}.${year} ${hours}:${minutes}`;
+        });
+    </script>
 
 {% else %}
     <div class="card empty-state">

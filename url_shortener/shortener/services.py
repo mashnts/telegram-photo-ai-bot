@@ -6,22 +6,17 @@ from decouple import config
 
 
 def get_location_by_ip(ip):
-    """получаем страну и город по IP адресу
-    TODO: добавить кеширование результатов чтобы не долбить api каждый раз
-    """
     try:
         response = requests.get(f'https://ipapi.co/{ip}/json/', timeout=2)
         if response.status_code == 200:
             data = response.json()
             return data.get('country_name', ''), data.get('city', '')
-    except:
-        # если что-то пошло не так - просто пропускаем
+    except requests.RequestException:
         pass
     return '', ''
 
 
 def generate_qr_code(url_obj, base_url=None):
-    """генерирует qr код для короткой ссылки"""
     if not base_url:
         base_url = config('BASE_URL', default='http://localhost:8000')
 

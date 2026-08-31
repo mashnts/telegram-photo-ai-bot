@@ -30,7 +30,7 @@
 
 <h2 class="section-title">График переходов по датам</h2>
 <div class="chart-container">
-    <canvas id="clicksChart"></canvas>
+    <canvas id="clicksChart" data-dates="{{ dates_json|safe }}" data-counts="{{ counts_json|safe }}"></canvas>
 </div>
 
 <div class="stats-grid">
@@ -148,6 +148,9 @@
 {% load static %}
 <script src="{% static 'shortener/js/analytics-chart.js' %}"></script>
 <script>
-    initAnalyticsChart({{ dates|safe }}, {{ counts|safe }});
+    const canvas = document.getElementById('clicksChart');
+    const dates = JSON.parse(canvas.dataset.dates);
+    const counts = JSON.parse(canvas.dataset.counts);
+    initAnalyticsChart(dates, counts);
 </script>
 {% endblock %}

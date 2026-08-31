@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m pip install:*)",
+      "Bash(python manage.py makemigrations:*)",
+      "Bash(python manage.py migrate:*)",
+      "Bash(dir:*)",
+      "Bash(python manage.py runserver:*)",
+      "Bash(rd /s /q shortenertemplates)",
+      "Bash(python manage.py collectstatic:*)",
+      "Bash(python:*)",
+      "Bash(rd /s /q shortenerutils)",
+      "Bash(rd /s /q shortenerservices)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(pip freeze:*)"
+    ]
+  }
+}
